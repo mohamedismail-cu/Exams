@@ -23,7 +23,7 @@
     
     <!-- State 1: Start Button -->
     <div id="start-state">
-      <p>Click below to start your Exam. The exam will open immediately.</p>
+      <p>Click below to start your 2-hour session. The exam will open immediately.</p>
       <button class="btn" onclick="startExam()">Start Exam & Open Form</button>
     </div>
 
@@ -43,9 +43,9 @@
     // =========================================================
     // CONFIGURATION
     // =========================================================
-    const EXAM_ID = "physics_exam_unit_100";       // Unique per exam
-    const DURATION_MINUTES = 10;                  // Time limit in minutes
-    const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfG1KAYhg-do9b3x9kfGnzeb_PtjStgFpsyL-cZJt_NV9uRGA/viewform?usp=dialog";  // Your Google Form Link
+    const EXAM_ID = "physics_exam_unit_1";       // Unique per exam
+    const DURATION_MINUTES = 120;                  // Time limit in minutes
+    const FORM_URL = "YOUR_GOOGLE_FORM_URL_HERE";  // Your Google Form Link
     // =========================================================
 
     const STORAGE_KEY = 'exam_start_time_' + EXAM_ID;
