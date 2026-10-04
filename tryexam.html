@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Timer</title>
   <style>
     body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 90vh; }
     .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 480px; width: 100%; text-align: center; }
     h2 { color: #1a73e8; margin-top: 0; }
     .timer-display { font-size: 36px; font-weight: bold; color: #202124; margin: 20px 0; padding: 15px; background: #e8f0fe; border-radius: 8px; border: 1px solid #aecbfa; }
-    .btn { background-color: #1a73e8; color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 10px; transition: background 0.2s; }
+    .btn { background-color: #1a73e8; color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 10px; font-size: 16px; }
     .btn:hover { background-color: #1557b0; }
     .btn-secondary { background-color: #34a853; }
     .btn-secondary:hover { background-color: #2d8e47; }
@@ -18,37 +19,37 @@
 <body>
 
   <div class="card">
-    <h2>Examination Timer Hub</h2>
+    <h2>Examination Portal</h2>
     
-    <!-- State 1: Before Starting -->
+    <!-- State 1: Start Button -->
     <div id="start-state">
-      <p>Click below when you are ready to begin. The 2-hour timer will start immediately and open your exam in a new tab.</p>
+      <p>Click below to start your 2-hour session. The exam will open immediately.</p>
       <button class="btn" onclick="startExam()">Start Exam & Open Form</button>
     </div>
 
     <!-- State 2: Active Exam Timer -->
     <div id="active-state" style="display: none;">
-      <p>Your exam session is active.</p>
+      <p>Exam in Progress</p>
       <div id="timer" class="timer-display">--:--:--</div>
-      <button class="btn btn-secondary" onclick="openFormTab()">Go to Google Form</button>
+      <button class="btn btn-secondary" onclick="openFloatingTimer()">Pop-out Floating Timer</button>
+      <button class="btn" style="margin-top: 10px; background-color: #5f6368;" onclick="goToForm()">Go to Google Form</button>
       <div class="note">
-        <strong>Important:</strong> Keep this tab open in the background to monitor your time. If you accidentally close your browser, re-open this link to resume your running timer.
+        If you close your browser by accident, reopen this page to recover your active session.
       </div>
     </div>
   </div>
 
   <script>
     // =========================================================
-    // CONFIGURATION - UPDATE THESE FOR EACH EXAM
+    // CONFIGURATION
     // =========================================================
-    const EXAM_ID = "physics_exam_unit_4";       // Unique key per exam
-    const DURATION_MINUTES = 5;                  // Duration in minutes
-    const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfG1KAYhg-do9b3x9kfGnzeb_PtjStgFpsyL-cZJt_NV9uRGA/viewform?usp=dialog";  // Full Google Form Link
+    const EXAM_ID = "physics_exam_unit_1";       // Unique per exam
+    const DURATION_MINUTES = 120;                  // Time limit in minutes
+    const FORM_URL = "YOUR_GOOGLE_FORM_URL_HERE";  // Your Google Form Link
     // =========================================================
 
     const STORAGE_KEY = 'exam_start_time_' + EXAM_ID;
     const TOTAL_SECONDS = DURATION_MINUTES * 60;
-    let timerInterval = null;
 
     function init() {
       let startTime = localStorage.getItem(STORAGE_KEY);
@@ -59,16 +60,73 @@
 
     function startExam() {
       let startTime = Date.now();
-  localStorage.setItem(STORAGE_KEY, startTime);
-  
-  showActiveTimer(startTime);
-  
-  // Open form directly
-  window.open(FORM_URL, '_blank');
+      localStorage.setItem(STORAGE_KEY, startTime);
+      
+      // Open floating timer pop-up window
+      openFloatingTimer();
+      
+      // Redirect current tab straight to the Google Form
+      window.location.href = FORM_URL;
     }
 
-    function openFormTab() {
-      window.open(FORM_URL, '_blank');
+    function goToForm() {
+      window.location.href = FORM_URL;
+    }
+
+    function openFloatingTimer() {
+      // Launch a small 350x200 floating widget window
+      const popup = window.open(
+        '', 
+        'TimerWidget', 
+        'width=350,height=200,top=50,left=50,resizable=yes,scrollbars=no,status=no'
+      );
+
+      if (popup) {
+        popup.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Timer</title>
+            <style>
+              body { font-family: Arial, sans-serif; background: #1a73e8; color: white; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center; }
+              h3 { margin: 0 0 5px 0; font-size: 14px; opacity: 0.9; }
+              #time { font-size: 32px; font-weight: bold; font-family: monospace; }
+            </style>
+          </head>
+          <body>
+            <h3>TIME REMAINING</h3>
+            <div id="time">--:--:--</div>
+            <script>
+              const STORAGE_KEY = '${STORAGE_KEY}';
+              const TOTAL_SECONDS = ${TOTAL_SECONDS};
+              
+              function update() {
+                let startTime = localStorage.getItem(STORAGE_KEY);
+                if (!startTime) return;
+                
+                let elapsed = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+                let remaining = TOTAL_SECONDS - elapsed;
+                
+                if (remaining <= 0) {
+                  document.getElementById('time').innerText = "EXPIRED";
+                  document.getElementById('time').style.color = "#ff4d4d";
+                  return;
+                }
+                
+                let h = Math.floor(remaining / 3600);
+                let m = Math.floor((remaining % 3600) / 60);
+                let s = remaining % 60;
+                
+                document.getElementById('time').innerText = 
+                  String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+              }
+              setInterval(update, 1000);
+              update();
+            <\/script>
+          </body>
+          </html>
+        `);
+      }
     }
 
     function showActiveTimer(startTime) {
@@ -83,10 +141,6 @@
 
         if (remainingSeconds <= 0) {
           timerElement.innerText = "TIME EXPIRED";
-          timerElement.style.color = "#d93025";
-          timerElement.style.backgroundColor = "#fce8e6";
-          timerElement.style.borderColor = "#f28b82";
-          clearInterval(timerInterval);
           return;
         }
 
@@ -99,7 +153,7 @@
       }
 
       updateTimer();
-      timerInterval = setInterval(updateTimer, 1000);
+      setInterval(updateTimer, 1000);
     }
 
     init();
