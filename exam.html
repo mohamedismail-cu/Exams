@@ -22,7 +22,7 @@
     
     <!-- State 1: Before Starting -->
     <div id="start-state">
-      <p>Click below when you are ready to begin. The 2-hour timer will start immediately and open your exam in a new tab.</p>
+      <p>Click below when you are ready to begin. The timer will start immediately and open your exam in a new tab.</p>
       <button class="btn" onclick="startExam()">Start Exam & Open Form</button>
     </div>
 
@@ -41,9 +41,9 @@
     // =========================================================
     // CONFIGURATION - UPDATE THESE FOR EACH EXAM
     // =========================================================
-    const EXAM_ID = "physics_exam_unit_40";       // Unique key per exam
-    const DURATION_MINUTES = 7;                  // Duration in minutes
-    const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfG1KAYhg-do9b3x9kfGnzeb_PtjStgFpsyL-cZJt_NV9uRGA/viewform?usp=dialog";  // Full Google Form Link
+    const EXAM_ID = "Chapter1";       // Unique key per exam
+    const DURATION_MINUTES = 120;                  // Duration in minutes
+    const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfsYrnkCsvTdUqSI-Ohr02xsz62usasif9G6h6T6IKJF8DkmA/viewform?usp=publish-editor";  // Full Google Form Link
     // =========================================================
 
     const STORAGE_KEY = 'exam_start_time_' + EXAM_ID;
@@ -82,7 +82,7 @@
         const timerElement = document.getElementById('timer');
 
         if (remainingSeconds <= 0) {
-          timerElement.innerText = "TIME EXPIRED";
+          timerElement.innerText = "TIME EXPIRED - Late submission make you lose grades !!!";
           timerElement.style.color = "#d93025";
           timerElement.style.backgroundColor = "#fce8e6";
           timerElement.style.borderColor = "#f28b82";
